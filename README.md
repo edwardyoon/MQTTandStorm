@@ -9,8 +9,6 @@ To build the project, you can run following command:
 $ mvn clean install package dependency:copy-dependencies
 ```
 
-.
-
 Once project is compiled, copy org.eclipse.paho.client.mqttv3-1.2.0.jar to $STORM_HOME/extlib folder. And then, you can submit your own topology to the Apache Storm cluster with following command:
 
 ```
