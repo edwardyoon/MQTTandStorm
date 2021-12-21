@@ -1,5 +1,5 @@
 # MQTTandStorm
-This shows how to handles Streaming IoT Data with MQTT and Apache Storm.
+This shows how to handle Streaming IoT Data with MQTT and Apache Storm.
 
 # Getting started
 
