@@ -1,5 +1,5 @@
 # MQTTandStorm
-Realtime Data processing using Apache Storm 
+This shows how to handles Streaming IoT Data with MQTT and Apache Storm.
 
 # Getting started
 
