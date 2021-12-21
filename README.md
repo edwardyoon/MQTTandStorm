@@ -1,5 +1,5 @@
-# stormapp
-Data processing using Apache Storm 
+# MQTTandStorm
+Realtime Data processing using Apache Storm 
 
 # Getting started
 
