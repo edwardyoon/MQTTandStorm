@@ -13,7 +13,7 @@ Once project is compiled, copy org.eclipse.paho.client.mqttv3-1.2.0.jar to $STOR
 
 ```
 $ cp lib/org.eclipse.paho.client.mqttv3-1.2.0.jar ~/{$STORM_HOME}/extlib
-$ storm jar target/stormapp-1.0-SNAPSHOT.jar com.dolbomdream.MyTopology
+$ storm jar target/stormapp-1.0-SNAPSHOT.jar org.apache.edwardyoon.MyTopology
 ```
 
 By passing message through MQTT, you will see the received message on MQTTSpout worker logs.
