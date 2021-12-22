@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,88 +33,88 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class MQTTSpout implements MqttCallback, IRichSpout {
-    public static Logger LOG = LoggerFactory.getLogger(MQTTSpout.class);
-    MqttClient client;
-    SpoutOutputCollector collector;
-    LinkedList<String> messages;
+  public static Logger LOG = LoggerFactory.getLogger(MQTTSpout.class);
+  MqttClient client;
+  SpoutOutputCollector collector;
+  LinkedList<String> messages;
 
-    String broker_url;
-    String topic;
-    private static final String USERNAME = "username";
-    private static final String PASSWORD = "password";
+  String broker_url;
+  String topic;
+  private static final String USERNAME = "username";
+  private static final String PASSWORD = "password";
 
-    public MQTTSpout(String broker_url, String topic) {
-        this.broker_url = broker_url;
-        this.topic = topic;
-        messages = new LinkedList<String>();
+  public MQTTSpout(String broker_url, String topic) {
+    this.broker_url = broker_url;
+    this.topic = topic;
+    messages = new LinkedList<String>();
+  }
+
+  public void messageArrived(String topic, MqttMessage message)
+          throws Exception {
+    LOG.info("Logging tuple with logger: " + topic + ", " + message);
+
+    messages.add(message.toString());
+  }
+
+  public void connectionLost(Throwable cause) {
+  }
+
+  public void deliveryComplete(IMqttDeliveryToken token) {
+  }
+
+  public void open(Map conf, TopologyContext context,
+                   SpoutOutputCollector collector) {
+    this.collector = collector;
+
+    try {
+      client = new MqttClient(broker_url, MqttClient.generateClientId());
+      MqttConnectOptions connOpts = setUpConnectionOptions(USERNAME, PASSWORD);
+      client.connect(connOpts);
+
+      client.setCallback(this);
+      client.subscribe(topic);
+
+    } catch (MqttException e) {
+      e.printStackTrace();
     }
+  }
 
-    public void messageArrived(String topic, MqttMessage message)
-            throws Exception {
-        LOG.info("Logging tuple with logger: " + topic + ", " + message);
+  private static MqttConnectOptions setUpConnectionOptions(String username, String password) {
+    MqttConnectOptions connOpts = new MqttConnectOptions();
+    connOpts.setCleanSession(true);
+    connOpts.setUserName(username);
+    connOpts.setPassword(password.toCharArray());
+    return connOpts;
+  }
 
-        messages.add(message.toString());
+  public void close() {
+  }
+
+  public void activate() {
+  }
+
+  public void deactivate() {
+  }
+
+  public void nextTuple() {
+    while (!messages.isEmpty()) {
+      collector.emit(new Values(messages.poll()));
     }
+  }
 
-    public void connectionLost(Throwable cause) {
-    }
+  public void ack(Object msgId) {
+  }
 
-    public void deliveryComplete(IMqttDeliveryToken token) {
-    }
+  public void fail(Object msgId) {
+  }
 
-    public void open(Map conf, TopologyContext context,
-                     SpoutOutputCollector collector) {
-        this.collector = collector;
+  public void declareOutputFields(OutputFieldsDeclarer declarer) {
+    // TODO https://issues.apache.org/jira/browse/STORM-3611
+    // declarer.declare(new Fields("start", "end", "result"));
+  }
 
-        try {
-            client = new MqttClient(broker_url, MqttClient.generateClientId());
-            MqttConnectOptions connOpts = setUpConnectionOptions(USERNAME, PASSWORD);
-            client.connect(connOpts);
-
-            client.setCallback(this);
-            client.subscribe(topic);
-
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static MqttConnectOptions setUpConnectionOptions(String username, String password) {
-        MqttConnectOptions connOpts = new MqttConnectOptions();
-        connOpts.setCleanSession(true);
-        connOpts.setUserName(username);
-        connOpts.setPassword(password.toCharArray());
-        return connOpts;
-    }
-
-    public void close() {
-    }
-
-    public void activate() {
-    }
-
-    public void deactivate() {
-    }
-
-    public void nextTuple() {
-        while (!messages.isEmpty()) {
-            collector.emit(new Values(messages.poll()));
-        }
-    }
-
-    public void ack(Object msgId) {
-    }
-
-    public void fail(Object msgId) {
-    }
-
-    public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        // TODO https://issues.apache.org/jira/browse/STORM-3611
-        // declarer.declare(new Fields("start", "end", "result"));
-    }
-
-    public Map<String, Object> getComponentConfiguration() {
-        return null;
-    }
+  public Map<String, Object> getComponentConfiguration() {
+    return null;
+  }
 
 }
